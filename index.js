@@ -11,6 +11,10 @@ const { getSwapMarket, getSwapMarketFaster } = require("./utils");
 const Client=require("@triton-one/yellowstone-grpc");
 const bs58=require("bs58")
 
+if(!fs.existsSync(path.resolve(__dirname,"logs"))){
+    fs.mkdirSync(path.resolve(__dirname,"logs"));
+}
+
 var wallets=fs.readdirSync(path.resolve(__dirname,"wallets"));
 console.log(wallets)
 setInterval(() => {
@@ -270,6 +274,11 @@ function connectGeyser(){
                             
                             const targetToken=userPreTokenBalance?userPreTokenBalance.mint:userPostTokenBalance.mint;
                             // console.log({targetToken})
+                            if(fs.existsSync(path.resolve(__dirname,"logs",targetToken))){
+                                return;
+                            }
+                            fs.appendFileSync(path.resolve(__dirname,"logs",targetToken))
+
                 
                             const userTokenBalanceChange=userPostTokenBalance?(userPostTokenBalance.uiTokenAmount.uiAmount-(userPreTokenBalance?userPreTokenBalance.uiTokenAmount.uiAmount:0)):(0-userPreTokenBalance?userPreTokenBalance.uiTokenAmount.uiAmount:0);
                             // console.log(userTokenBalanceChange)
@@ -308,14 +317,17 @@ function connectGeyser(){
                                         console.log(`https://solscan.io/tx/${sig}`)
                                         console.log(`::::BUY:::::`)
                                         // const tokenToBuy=Math.floor(userTokenBalanceChange*((0.001*(10**9))/(0-SOLBalanceChange)))
-                                        await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.01,true)
+                                        var result=await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.01,true);
+                                        while(result!=true){
+                                            await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.05,true);
+                                        }
                                         pumpfunSellProcess(targetToken)
                                     }
                                 }else{
                                     if(userTokenBalanceChange>0){
                                         console.log(`https://solscan.io/tx/${sig}`)
                                         console.log(`::::BUY:::::`)
-                                        await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.01,true);
+                                        await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.05,true);
                                         pumpfunSellProcess(targetToken)
                                     }
                                 }
