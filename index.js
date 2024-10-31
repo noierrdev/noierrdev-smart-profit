@@ -271,6 +271,7 @@ function connectGeyser(){
                             
                             const targetToken=userPreTokenBalance?userPreTokenBalance.mint:userPostTokenBalance.mint;
                             // console.log({targetToken})
+                            if(!targetToken) return;
                             if(fs.existsSync(path.resolve(__dirname,"logs",targetToken))){
                                 return;
                             }
