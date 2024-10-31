@@ -317,6 +317,10 @@ function connectGeyser(){
                                         // const tokenToBuy=Math.floor(userTokenBalanceChange*((0.01*(10**9))/(0-SOLBalanceChange)))
                                         var result=await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
                                         if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
+                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
+                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
+                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
+                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
                                         // while(result!=true){
                                         //     await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.01,true);
                                         // }
@@ -327,6 +331,11 @@ function connectGeyser(){
                                         console.log(`https://solscan.io/tx/${sig}`)
                                         console.log(`::::BUY:::::`)
                                         var result=await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
+                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
+                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
+                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
+                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
+                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
                                         if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
                                         // while(result!=true){
                                         //     await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.01,true);
