@@ -14,6 +14,11 @@ const bs58=require("bs58")
 
 const wallets=fs.readdirSync(path.resolve(__dirname,"wallets"));
 console.log(wallets)
+setInterval(() => {
+    wallets=fs.readdirSync(path.resolve(__dirname,"wallets"));
+    console.log(`Wallets update`)
+    console.log(wallets)
+}, 2000);
 
 const connection=new Connection(process.env.RPC_API);
 
@@ -303,16 +308,15 @@ function connectGeyser(){
                                     if(userTokenBalanceChange>0){
                                         console.log(`https://solscan.io/tx/${sig}`)
                                         console.log(`::::BUY:::::`)
-                                        const tokenToBuy=Math.floor(userTokenBalanceChange*((0.001*(10**9))/(0-SOLBalanceChange)))
-                                        // await swapPumpfunFasterWallet(connection, wallet,targetToken,bondingCurve,bondingCurveVault,tokenToBuy,true);
-                                        await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.15,true)
+                                        // const tokenToBuy=Math.floor(userTokenBalanceChange*((0.001*(10**9))/(0-SOLBalanceChange)))
+                                        await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true)
                                         pumpfunSellProcess(targetToken)
                                     }
                                 }else{
                                     if(userTokenBalanceChange>0){
                                         console.log(`https://solscan.io/tx/${sig}`)
                                         console.log(`::::BUY:::::`)
-                                        await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.15,true);
+                                        await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
                                         pumpfunSellProcess(targetToken)
                                     }
                                 }
