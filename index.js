@@ -69,8 +69,11 @@ function connectWebsocket(){
     });
     
     ws.on('message', async function incoming(data) {
-        const messageStr = data.toString('utf8');
+        
         try {
+
+            const messageStr = data.toString('utf8');
+            
             const messageObj = JSON.parse(messageStr);
     
             const result = messageObj.params.result;
