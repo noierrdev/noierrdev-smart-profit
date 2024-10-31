@@ -11,7 +11,7 @@ const { getSwapMarket, getSwapMarketFaster } = require("./utils");
 const Client=require("@triton-one/yellowstone-grpc");
 const bs58=require("bs58")
 
-const wallets=fs.readdirSync(path.resolve(__dirname,"wallets"));
+var wallets=fs.readdirSync(path.resolve(__dirname,"wallets"));
 console.log(wallets)
 setInterval(() => {
     wallets=fs.readdirSync(path.resolve(__dirname,"wallets"));
