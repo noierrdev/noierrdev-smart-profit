@@ -18,7 +18,7 @@ if(!fs.existsSync(path.resolve(__dirname,"logs"))){
 var wallets=fs.readdirSync(path.resolve(__dirname,"wallets"));
 setInterval(() => {
     wallets=fs.readdirSync(path.resolve(__dirname,"wallets"));
-}, 200);
+}, 500);
 
 const connection=new Connection(process.env.RPC_API);
 
