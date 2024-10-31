@@ -272,10 +272,10 @@ function connectGeyser(){
                             const targetToken=userPreTokenBalance?userPreTokenBalance.mint:userPostTokenBalance.mint;
                             // console.log({targetToken})
                             if(!targetToken) return;
-                            if(fs.existsSync(path.resolve(__dirname,"logs",targetToken))){
-                                return;
-                            }
-                            fs.appendFileSync(path.resolve(__dirname,"logs",targetToken))
+                            // if(fs.existsSync(path.resolve(__dirname,"logs",targetToken))){
+                            //     return;
+                            // }
+                            // fs.appendFileSync(path.resolve(__dirname,"logs",targetToken))
 
                 
                             const userTokenBalanceChange=userPostTokenBalance?(userPostTokenBalance.uiTokenAmount.uiAmount-(userPreTokenBalance?userPreTokenBalance.uiTokenAmount.uiAmount:0)):(0-userPreTokenBalance?userPreTokenBalance.uiTokenAmount.uiAmount:0);
