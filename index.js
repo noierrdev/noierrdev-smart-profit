@@ -318,14 +318,14 @@ function connectGeyser(){
                                         while(result!=true){
                                             await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.01,true);
                                         }
-                                        pumpfunSellProcess(targetToken)
+                                        // pumpfunSellProcess(targetToken)
                                     }
                                 }else{
                                     if(userTokenBalanceChange>0){
                                         console.log(`https://solscan.io/tx/${sig}`)
                                         console.log(`::::BUY:::::`)
                                         await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.01,true);
-                                        pumpfunSellProcess(targetToken)
+                                        // pumpfunSellProcess(targetToken)
                                     }
                                 }
                             }
