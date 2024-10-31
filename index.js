@@ -271,7 +271,7 @@ function connectGeyser(){
                             // console.log(userTokenBalanceChange)
                 
                             if(userTokenBalanceChange==0){
-                                // console.log(":::!!!NOT SWAPPING!!!:::")
+                                // console.log(":::!!!NOT SWAPPING!!!:::");
                             }
                 
                             if(allAccounts.includes(RAYDIUM_OPENBOOK_AMM)){
@@ -281,18 +281,14 @@ function connectGeyser(){
                                     if(userTokenBalanceChange>0){
                                         console.log(`https://solscan.io/tx/${sig}`)
                                         console.log(`::::BUY:::::`)
-                                        // await swapTokenAccounts(connection,targetToken,swapInstruction.accounts,0.001,false);
                                         await swapTokenAccountsWallet(connection,wallet,targetToken,swapInstruction.accounts,0.1,false);
-                                        // await bot.api.sendMessage(`noierrdevcopytrading_channel`,`<b>Raydium copied!</b>\n<code>${signers[0]}</code>\n<a href="https://solscan.io/tx/${signature}" >Photon</a>`,{parse_mode:"HTML",link_preview_options:{is_disabled:true}})
                                     }
                                 }else{
                                     const swapMarket=await getSwapMarketFaster(connection,targetToken);
                                     if(userTokenBalanceChange>0){
                                         console.log(`https://solscan.io/tx/${sig}`)
                                         console.log(`::::BUY:::::`)
-                                        // await swapTokenFastest(connection,targetToken,swapMarket.poolKeys,0.001,false);
                                         await swapTokenFastestWallet(connection,wallet,swapMarket.poolKeys, 0.1,false)
-                                        // await bot.api.sendMessage(`noierrdevcopytrading_channel`,`<b>Raydium copied!</b>\n<code>${signers[0]}</code>\n<a href="https://solscan.io/tx/${signature}" >Photon</a>`,{parse_mode:"HTML",link_preview_options:{is_disabled:true}})
                                     }
                                 }
                             }
@@ -309,17 +305,15 @@ function connectGeyser(){
                                         console.log(`::::BUY:::::`)
                                         const tokenToBuy=Math.floor(userTokenBalanceChange*((0.001*(10**9))/(0-SOLBalanceChange)))
                                         // await swapPumpfunFasterWallet(connection, wallet,targetToken,bondingCurve,bondingCurveVault,tokenToBuy,true);
-                                        // await pumpfunSwapTransactionFaster(connection,targetToken,0.001,true);
                                         await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.15,true)
+                                        pumpfunSellProcess(targetToken)
                                     }
                                 }else{
                                     if(userTokenBalanceChange>0){
                                         console.log(`https://solscan.io/tx/${sig}`)
                                         console.log(`::::BUY:::::`)
-                                        // const tokenToBuy=Math.floor(userTokenBalanceChange*((0.1*(10**9))/(0-SOLBalanceChange)))
-                                        // await pumpfunSwapTransactionFaster(connection,targetToken,0.001,true);
                                         await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.15,true);
-                                        // await bot.api.sendMessage(`noierrdevcopytrading_channel`,`<b>Pumpfun copied!</b>\n<code>${signers[0]}</code>\n<a href="https://solscan.io/tx/${signature}" >Photon</a>`,{parse_mode:"HTML",link_preview_options:{is_disabled:true}})
+                                        pumpfunSellProcess(targetToken)
                                     }
                                 }
                             }
@@ -352,5 +346,15 @@ function connectGeyser(){
 
     });
 }
-
+function pumpfunSellProcess(targetToken){
+    var timer=0
+    var intervalId=setInterval(async() => {
+        if(timer>12) {
+            clearInterval(intervalId)
+            await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.0001,false);
+        }
+        console.log(targetToken)
+        timer++;
+    }, 1000);
+}
 connectGeyser()
