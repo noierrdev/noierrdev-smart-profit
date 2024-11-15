@@ -281,7 +281,7 @@ function connectGeyser(){
                                 while(!result){
                                     await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true)
                                     counter++;
-                                    if(counter>10) break;
+                                    // if(counter>10) break;
                                 }
                                 // if(!result) result=await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true);
                                 // if(!result) result=await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true);
