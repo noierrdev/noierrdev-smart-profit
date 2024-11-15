@@ -257,6 +257,7 @@ function connectGeyser(){
                         if(!detected) return;
                         const signers=[allAccounts[0]]
                         if(allAccounts.includes(PUMPFUN_BONDINGCURVE)){
+                            console.log(transaction)
                             if(transaction.meta.logMessages.some(log=>log.includes("InitializeMint2"))){
                                 console.log(transaction)
                             }
