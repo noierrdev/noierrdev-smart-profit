@@ -202,6 +202,7 @@ function connectWebsocket(){
 
 // connectWebsocket()
 
+var test=false;
 
 function connectGeyser(){
     const client =new Client.default("http://grpc.solanavibestation.com:10000/",undefined,undefined);
@@ -261,6 +262,8 @@ function connectGeyser(){
                         const signers=[allAccounts[0]]
                         if(allAccounts.includes(PUMPFUN_BONDINGCURVE)){
                             if(transaction.meta.logMessages.includes("Program log: Instruction: InitializeMint2")){
+                                if(test) return;
+                                test=true;
                                 // console.log(allAccounts)
                                 console.log(`https://solscan.io/tx/${sig}`)
                                 // console.log(transaction.transaction.message.instructions)
