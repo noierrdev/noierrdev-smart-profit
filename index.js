@@ -4,7 +4,7 @@ const {Connection, PublicKey, Keypair}=require("@solana/web3.js")
 const fs=require('fs')
 const path=require('path')
 const WebSocket = require('ws');
-const { pumpfunSwapTransactionFaster, swapTokenAccounts, swapPumpfunFaster, swapTokenFastest, swapTokenFastestWallet, pumpfunSwapTransactionFasterWallet, swapTokenAccountsWallet, swapPumpfunFasterWallet } = require("./swap");
+const { pumpfunSwapTransactionFaster, swapTokenAccounts, swapPumpfunFaster, swapTokenFastest, swapTokenFastestWallet, pumpfunSwapTransactionFasterWallet, swapTokenAccountsWallet, swapPumpfunFasterWallet, swapPumpfunFasterWalletStaked } = require("./swap");
 const { getAssociatedTokenAddressSync } = require("@solana/spl-token");
 
 const { getSwapMarket, getSwapMarketFaster } = require("./utils");
@@ -25,6 +25,7 @@ setInterval(() => {
 }, 500);
 
 const connection=new Connection(process.env.RPC_API);
+const stakedConnection=new Connection(process.env.STAKED_RPC)
 
 const PUMPFUN_RAYDIUM_MIGRATION="39azUYFWPz3VHgKCf3VChUwbpURdCHRxjWVowf5jUJjg"
 const RAYDIUM_OPENBOOK_AMM="675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8"
@@ -269,6 +270,10 @@ function connectGeyser(){
                                 if(pumpfunInstructions.length>1) buyInstruction=pumpfunInstructions[1];
                                 console.log(createInstruction)
                                 console.log(buyInstruction)
+                                const targetToken=allAccounts[createInstruction.accounts[0]];
+                                const bondingCurve=allAccounts[createInstruction.accounts[2]];
+                                const bondingCurveVault=allAccounts[createInstruction.accounts[3]];
+                                await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true)
                             }
                         }
                         else if(allAccounts.includes(RAYDIUM_OPENBOOK_AMM)){
