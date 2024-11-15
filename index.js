@@ -11,6 +11,10 @@ const { getSwapMarket, getSwapMarketFaster } = require("./utils");
 const Client=require("@triton-one/yellowstone-grpc");
 const bs58=require("bs58")
 
+if(!fs.existsSync(path.resolve(__dirname,"wallets"))){
+    fs.mkdirSync(path.resolve(__dirname,"wallets"));
+}
+
 if(!fs.existsSync(path.resolve(__dirname,"logs"))){
     fs.mkdirSync(path.resolve(__dirname,"logs"));
 }
