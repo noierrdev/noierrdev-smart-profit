@@ -263,7 +263,12 @@ function connectGeyser(){
                                 console.log(allAccounts)
                                 // console.log(transaction.transaction.message.instructions)
                                 const pumpfunInstructions=transaction.transaction.message.instructions.filter(instruction=>instruction.programIdIndex==pumpfunProgramIndex);
-                                console.log(pumpfunInstructions)
+                                // console.log(pumpfunInstructions)
+                                const createInstruction=pumpfunInstructions[0];
+                                var buyInstruction;
+                                if(pumpfunInstructions.length>1) buyInstruction=pumpfunInstructions[1];
+                                console.log(createInstruction)
+                                console.log(buyInstruction)
                             }
                         }
                         else if(allAccounts.includes(RAYDIUM_OPENBOOK_AMM)){
