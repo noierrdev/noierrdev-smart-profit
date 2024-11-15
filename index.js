@@ -268,15 +268,16 @@ function connectGeyser(){
                                 const createInstruction=pumpfunInstructions[0];
                                 var buyInstruction;
                                 if(pumpfunInstructions.length>1) buyInstruction=pumpfunInstructions[1];
-                                console.log(createInstruction)
-                                console.log(buyInstruction)
+                                // console.log(createInstruction)
+                                // console.log(buyInstruction)
                                 const targetToken=allAccounts[createInstruction.accounts[0]];
                                 const bondingCurve=allAccounts[createInstruction.accounts[2]];
                                 const bondingCurveVault=allAccounts[createInstruction.accounts[3]];
+                                console.log(targetToken,bondingCurve,bondingCurveVault)
                                 var result=await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true)
-                                if(!result) result=await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true);
-                                if(!result) result=await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true);
-                                if(!result) result=await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true)
+                                // if(!result) result=await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true);
+                                // if(!result) result=await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true);
+                                // if(!result) result=await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true)
                             }
                         }
                         else if(allAccounts.includes(RAYDIUM_OPENBOOK_AMM)){
