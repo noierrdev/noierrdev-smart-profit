@@ -229,7 +229,7 @@ function connectGeyser(){
                 blocksMeta: {},
                 accountsDataSlice: [],
                 ping: undefined,
-                commitment: Client.CommitmentLevel.PROCESSED
+                commitment: Client.CommitmentLevel.CONFIRMED
             })
         
             const stream =await client.subscribe();
