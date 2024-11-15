@@ -229,7 +229,7 @@ function connectGeyser(){
                 blocksMeta: {},
                 accountsDataSlice: [],
                 ping: undefined,
-                commitment: Client.CommitmentLevel.CONFIRMED
+                commitment: Client.CommitmentLevel.PROCESSED
             })
         
             const stream =await client.subscribe();
@@ -281,9 +281,9 @@ function connectGeyser(){
                                 // var result=await swapPumpfunFasterWallet(connection,wallet,targetToken,bondingCurve,bondingCurveVault,1000,true)
                                 var result=await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true)
                                 var counter=0;
-                                while(!result){
+                                while(result!=true){
                                     await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true)
-                                    counter++;
+                                    // counter++;
                                     // if(counter>10) break;
                                 }
                                 // if(!result) result=await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true);
