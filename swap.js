@@ -3179,7 +3179,7 @@ const swapPumpfunFasterWallet=async (connection, wallet, targetToken, bondingCur
     SOL_MINT_PUBKEY,
     wallet.publicKey,
   );  
-  txObject.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 300000}));
+  txObject.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 500000}));
   const tokenATA = getAssociatedTokenAddressSync(
     MYTOKEN_MINT_PUBKEY,
     wallet.publicKey,
@@ -3289,7 +3289,7 @@ const swapPumpfunFasterWallet=async (connection, wallet, targetToken, bondingCur
     "DttWaMuVvTiduZRnguLF7jNxTgiMBZ1hyAumKUiL2KRL",
     "3AVi9Tg9Uo68tJfuvoKvqKNWKkC5wPdSSdeBnizKZ6jT"
   ]
-  const jito_tip_amount=BigInt(Number(300000))
+  const jito_tip_amount=BigInt(Number(500000))
   var jito_tip_account=new PublicKey(jito_tip_accounts[6]);
   txObject.add(
     SystemProgram.transfer({
@@ -3619,6 +3619,17 @@ const pumpfunSwapTransactionFasterWallet=async (connection,wallet, tokenAddress,
   if(response.status === 200){
     const data = await response.arrayBuffer();
     const tx = VersionedTransaction.deserialize(new Uint8Array(data));
+
+    const PUMPFUN_CONTRACT="HWEHeKLzzwXix3wAT2HTNijeKChu9XERdqGid1UzzjPo";
+    const swapInstruction=tx.message.compiledInstructions.find(instruction=>tx.message.staticAccountKeys[instruction.programIdIndex].toBase58()==PUMPFUN_CONTRACT);
+    const amountBuffer = swapInstruction.data.slice(8, 16);
+    const tokenAmount = amountBuffer.reduce((acc, byte, i) => acc + BigInt(byte) * (BigInt(256) ** BigInt(i)), BigInt(0));
+    console.log(Number(tokenAmount))
+    // if(Number(tokenAmount)==0){
+    //   console.log("NO TOKEN BALANCE!")
+    //   return;
+    // }
+
     const latestBlock=await connection.getLatestBlockhash();
     tx.message.recentBlockhash=latestBlock.blockhash;
     tx.sign([wallet]);
@@ -6483,7 +6494,8 @@ const swapPumpfunFasterWalletStaked=async (connection,stakedConnection, wallet, 
     wallet.publicKey,
   );
   
-  txObject.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 300000}));
+  // txObject.add(ComputeBudgetProgram.setComputeUnitLimit({units:300000}))
+  txObject.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 1000000}));
   
   const tokenATA = getAssociatedTokenAddressSync(
     MYTOKEN_MINT_PUBKEY,
@@ -6696,13 +6708,33 @@ const pumpfunSwapTransactionFasterWalletStaked=async (connection,stakedConnectio
           "denominatedInSol": buy?'true':'false',
           "amount": buy?String(amount):"100%",
           "slippage": 10, 
-          "priorityFee": 0.0003, 
+          "priorityFee": 0.0002, 
           "pool": "pump"
       })
   });
   if(response.status === 200){
     const data = await response.arrayBuffer();
     const tx = VersionedTransaction.deserialize(new Uint8Array(data));
+
+    // const PUMPFUN_CONTRACT="HWEHeKLzzwXix3wAT2HTNijeKChu9XERdqGid1UzzjPo";
+    // const swapInstruction=tx.message.compiledInstructions.find(instruction=>tx.message.staticAccountKeys[instruction.programIdIndex].toBase58()==PUMPFUN_CONTRACT);
+    // var tokenAmount =0
+    // const amountBuffer = swapInstruction.data.slice(8, 16);
+    // if(buy){
+    //   tokenAmount = Number(amountBuffer.reduce((acc, byte, i) => acc + BigInt(byte) * (BigInt(256) ** BigInt(i)), BigInt(0)));
+    //   console.log(tokenAmount)
+    // }else {
+    //   const tokenAccount=tx.message.staticAccountKeys[swapInstruction.accountKeyIndexes[5]];
+    //   const 
+    //   tokenAmount = Number(amountBuffer.reduce((acc, byte, i) => acc + BigInt(byte) * (BigInt(256) ** BigInt(i)), BigInt(0))); // Little-endian u64
+    //   console.log();
+    // }
+    
+    // if(tokenAmount==0){
+    //   console.log("NO TOKEN BALANCE!")
+    //   return;
+    // }
+
     const latestBlock=await connection.getLatestBlockhash();
     tx.message.recentBlockhash=latestBlock.blockhash;
     tx.sign([wallet]);
@@ -6980,6 +7012,130 @@ const swapPumpfunHidden=async (connection, wallet, newWallet, targetToken, bondi
   
   }
 
+  const pumpfunSwapTransactionFasterWalletTokenStaked=async (connection,stakedConnection,wallet, tokenAddress,amount,buy)=>{
+    // const PRIVATE_KEY = Uint8Array.from(JSON.parse(process.env.PRIVATE_KEY));
+    // // const connection=new Connection(process.env.RPC_API)
+    // const wallet = Keypair.fromSecretKey(PRIVATE_KEY);
+    const response = await fetch(`https://pumpportal.fun/api/trade-local`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            "publicKey": wallet.publicKey.toBase58(),
+            "action": buy?"buy":"sell",
+            "mint": tokenAddress,
+            "denominatedInSol": 'false',
+            "amount": String(amount),
+            "slippage": 10, 
+            "priorityFee": 0.0003, 
+            "pool": "pump"
+        })
+    });
+    if(response.status === 200){
+      const data = await response.arrayBuffer();
+      const tx = VersionedTransaction.deserialize(new Uint8Array(data));
+      const latestBlock=await connection.getLatestBlockhash();
+      tx.message.recentBlockhash=latestBlock.blockhash;
+      tx.sign([wallet]);
+    
+    try {
+      const txnSignature = await stakedConnection.sendTransaction(tx);
+      console.log(txnSignature)
+      // const x=await connection.confirmTransaction({
+      //   signature: txnSignature,
+      //   blockhash: latestBlock.blockhash,
+      //   lastValidBlockHeight: latestBlock.lastValidBlockHeight,
+      // });
+      // console.log(x)
+      return true;
+    } catch (error) {
+      console.log(error)
+      return false;
+    }
+    //   const jitoTx=new Transaction();
+    //   jitoTx.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: Number(10000)}));
+    //   const jito_tip_accounts=[
+    //     "96gYZGLnJYVFmbjzopPSU6QiEV5fGqZNyN9nmNhvrZU5",
+    //     "HFqU5x63VTqvQss8hp11i4wVV8bD44PvwucfZ2bU7gRe",
+    //     "Cw8CFyM9FkoMi7K7Crf6HNQqf4uEMzpKw6QNghXLvLkY",
+    //     "ADaUMid9yfUytqMBgopwjb2DTLSokTSzL1zt6iGPaS49",
+    //     "DfXygSm4jCyNCybVYYK6DwvWqjKee8pbDmJGcLWNDXjh",
+    //     "ADuUkR4vqLUMWXxW9gh6D6L8pMSawimctcNZ5pGwDcEt",
+    //     "DttWaMuVvTiduZRnguLF7jNxTgiMBZ1hyAumKUiL2KRL",
+    //     "3AVi9Tg9Uo68tJfuvoKvqKNWKkC5wPdSSdeBnizKZ6jT"
+    //   ]
+    //   const jito_tip_amount=BigInt(Number(300000))
+    //   const jito_tip_index=(Math.round(Math.random()*10))%8;
+    //   const jito_tip_account=new PublicKey(jito_tip_accounts[jito_tip_index]);
+    //   jitoTx.add(
+    //     SystemProgram.transfer({
+    //       fromPubkey:wallet.publicKey,
+    //       toPubkey:jito_tip_account,
+    //       lamports:jito_tip_amount
+    //     })
+    //   );
+    //   jitoTx.feePayer = wallet.publicKey;
+    //   // const latestBlock=await connection.getLatestBlockhash("confirmed");
+    //   jitoTx.recentBlockhash=latestBlock.blockhash;
+    //   jitoTx.partialSign(wallet);
+  
+    //   const jitoTxSerialized=bs58.encode(jitoTx.serialize());
+    //   const txSerialized=bs58.encode(tx.serialize());
+    //   // console.log({jitoTxSerialized})
+    //   let payload = {
+    //     jsonrpc: "2.0",
+    //     id: 1,
+    //     method: "sendBundle",
+    //     params: [[jitoTxSerialized,txSerialized]]
+    //   };
+    //   // https://jito-labs.gitbook.io/mev/searcher-resources/json-rpc-api-reference/url
+    //   const jito_endpoints = [
+    //     'https://ny.mainnet.block-engine.jito.wtf/api/v1/bundles',
+    //     'https://mainnet.block-engine.jito.wtf/api/v1/bundles',
+    //     'https://amsterdam.mainnet.block-engine.jito.wtf/api/v1/bundles',
+    //     'https://frankfurt.mainnet.block-engine.jito.wtf/api/v1/bundles',
+    //     'https://tokyo.mainnet.block-engine.jito.wtf/api/v1/bundles',
+    //   ];
+    //   var result=false;
+    //   for(var endpoint of jito_endpoints){
+        
+    //     try {
+    //       let res = await fetch(`${endpoint}`, {
+    //         method: 'POST',
+    //         body: JSON.stringify(payload),
+    //         headers: { 'Content-Type': 'application/json' }
+    //       });
+    //       const responseData=await res.json();
+    //       if(!responseData.error) {
+    //         console.log(`----------${endpoint}-------------`)
+    //         console.log(responseData)
+    //         console.log(`${buy?"Buying":"Selling"} Tokens is successful!!!`)
+    //         console.log(`-----------------------------------`)
+    //         result=true;
+    //         if(buy)
+    //           break;
+    //       }else {
+    //         console.log(`----------${endpoint}-------------`)
+    //         console.log(responseData)
+    //         console.log(`${buy?"Buying":"Selling"} Tokens is failed!!!`)
+    //         console.log(`-----------------------------------`)
+    //       }
+    //     } catch (error) {
+    //       console.log(`----------${endpoint}-------------`)
+    //       console.log(error)
+    //       console.log(`${buy?"Buying":"Selling"} Tokens is successful!!!`)
+    //       console.log(`-----------------------------------`)
+    //     }
+    //   }
+    //   if(!result) return false;
+    //   return true;
+      
+    } else {
+        console.log(response.statusText);
+    }
+  }
+
 module.exports={
   swapToken,
   swapTokenRapid,
@@ -7014,5 +7170,6 @@ module.exports={
   pumpfunSwapTransactionFasterWalletToken,
   swapTokenFastestWalletStaked,
   swapPumpfunFasterWalletStaked,
-  pumpfunSwapTransactionFasterWalletStaked
+  pumpfunSwapTransactionFasterWalletStaked,
+  pumpfunSwapTransactionFasterWalletTokenStaked
 }

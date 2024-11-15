@@ -252,98 +252,12 @@ function connectGeyser(){
 
                         if(!detected) return;
                         const signers=[allAccounts[0]]
-                        if(allAccounts.includes(PUMPFUN_BONDINGCURVE)||allAccounts.includes(RAYDIUM_OPENBOOK_AMM)){
-                            
-                            const SOLBalanceChange=transaction.meta.postBalances[0]-transaction.meta.preBalances[0]
-                            // console.log({SOLBalanceChange})
-                            const userPreWSOLBalance=transaction.meta.preTokenBalances.find(ba=>((ba.mint==SOL_MINT_ADDRESS)&&(ba.owner==signers[0])));
-                            const userPostWSOLBalance=transaction.meta.postTokenBalances.find(ba=>((ba.mint==SOL_MINT_ADDRESS)&&(ba.owner==signers[0])));
-                            const WSOLBalChange=userPostWSOLBalance?(userPostWSOLBalance.uiTokenAmount.uiAmount-(userPreWSOLBalance?userPreWSOLBalance.uiTokenAmount.uiAmount:0)):(0-userPreWSOLBalance?userPreWSOLBalance.uiTokenAmount.uiAmount:0);
-                            // console.log({WSOLBalChange})
-                            const userPreTokenBalance=transaction.meta.preTokenBalances.find(ba=>((ba.mint!=SOL_MINT_ADDRESS)&&(ba.owner==signers[0])));
-                            const userPostTokenBalance=transaction.meta.postTokenBalances.find(ba=>((ba.mint!=SOL_MINT_ADDRESS)&&(ba.owner==signers[0])));
-                            // console.log({userPreTokenBalance,userPostTokenBalance});
-
-                            if((!userPreTokenBalance)&&(!userPostTokenBalance)) {
-                                // console.log("!!!!!===NOT SWAP TX===!!!!!");
-                                return;
+                        if(allAccounts.includes(PUMPFUN_BONDINGCURVE)){
+                            if(transaction.meta.logMessages.includes("Program log: Instruction: InitializeMint2")){
+                                console.log(transaction)
                             }
-                            
-                            const targetToken=userPreTokenBalance?userPreTokenBalance.mint:userPostTokenBalance.mint;
-                            // console.log({targetToken})
-                            if(!targetToken) return;
-                            if(fs.existsSync(path.resolve(__dirname,"logs",targetToken))){
-                                return;
-                            }
-                            fs.appendFileSync(path.resolve(__dirname,"logs",targetToken),"")
-
-                
-                            const userTokenBalanceChange=userPostTokenBalance?(userPostTokenBalance.uiTokenAmount.uiAmount-(userPreTokenBalance?userPreTokenBalance.uiTokenAmount.uiAmount:0)):(0-userPreTokenBalance?userPreTokenBalance.uiTokenAmount.uiAmount:0);
-                            // console.log(userTokenBalanceChange)
-                
-                            if(userTokenBalanceChange==0){
-                                // console.log(":::!!!NOT SWAPPING!!!:::");
-                            }
-                
-                            if(allAccounts.includes(RAYDIUM_OPENBOOK_AMM)){
-                                const swapInstruction=(transaction?.transaction.message.instructions).find(instruction =>instruction.programId==RAYDIUM_OPENBOOK_AMM);
-                                console.log(swapInstruction)
-                                if(swapInstruction){
-                                    if(userTokenBalanceChange>0){
-                                        console.log(`https://solscan.io/tx/${sig}`)
-                                        console.log(`::::BUY:::::`)
-                                        await swapTokenAccountsWallet(connection,wallet,targetToken,swapInstruction.accounts,0.1,false);
-                                    }
-                                }else{
-                                    const swapMarket=await getSwapMarketFaster(connection,targetToken);
-                                    if(userTokenBalanceChange>0){
-                                        console.log(`https://solscan.io/tx/${sig}`)
-                                        console.log(`::::BUY:::::`)
-                                        await swapTokenFastestWallet(connection,wallet,swapMarket.poolKeys, 0.1,false)
-                                    }
-                                }
-                            }
-                            else if(allAccounts.includes(PUMPFUN_BONDINGCURVE)){
-                                const swapInstruction=(transaction?.transaction.message.instructions).find(instruction =>instruction.programId==PUMPFUN_BONDINGCURVE);
-                                
-                                if(swapInstruction){
-                                    var bondingCurve=null;
-                                    var bondingCurveVault=null;
-                                    bondingCurve=swapInstruction?.accounts[3];
-                                    bondingCurveVault=swapInstruction?.accounts[4];
-                                    if(userTokenBalanceChange>0){
-                                        console.log(`https://solscan.io/tx/${sig}`)
-                                        console.log(`::::BUY:::::`)
-                                        // const tokenToBuy=Math.floor(userTokenBalanceChange*((0.01*(10**9))/(0-SOLBalanceChange)))
-                                        var result=await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
-                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
-                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
-                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
-                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
-                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
-                                        // while(result!=true){
-                                        //     await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.01,true);
-                                        // }
-                                        pumpfunSellProcess(targetToken)
-                                    }
-                                }else{
-                                    if(userTokenBalanceChange>0){
-                                        console.log(`https://solscan.io/tx/${sig}`)
-                                        console.log(`::::BUY:::::`)
-                                        var result=await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
-                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
-                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
-                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
-                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
-                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
-                                        if(result!=true) await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.001,true);
-                                        // while(result!=true){
-                                        //     await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.01,true);
-                                        // }
-                                        pumpfunSellProcess(targetToken)
-                                    }
-                                }
-                            }
+                        }
+                        else if(allAccounts.includes(RAYDIUM_OPENBOOK_AMM)){
 
                         }
 
@@ -372,16 +286,5 @@ function connectGeyser(){
         }
 
     });
-}
-function pumpfunSellProcess(targetToken){
-    var timer=0
-    var intervalId=setInterval(async() => {
-        if(timer>12) {
-            clearInterval(intervalId)
-            await pumpfunSwapTransactionFasterWallet(connection,wallet,targetToken,0.0001,false);
-        }
-        console.log(targetToken)
-        timer++;
-    }, 1000);
 }
 connectGeyser()
