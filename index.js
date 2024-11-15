@@ -261,7 +261,8 @@ function connectGeyser(){
                         const signers=[allAccounts[0]]
                         if(allAccounts.includes(PUMPFUN_BONDINGCURVE)){
                             if(transaction.meta.logMessages.includes("Program log: Instruction: InitializeMint2")){
-                                console.log(allAccounts)
+                                // console.log(allAccounts)
+                                console.log(`https://solscan.io/tx/${sig}`)
                                 // console.log(transaction.transaction.message.instructions)
                                 const pumpfunInstructions=transaction.transaction.message.instructions.filter(instruction=>instruction.programIdIndex==pumpfunProgramIndex);
                                 // console.log(pumpfunInstructions)
@@ -273,7 +274,7 @@ function connectGeyser(){
                                 const targetToken=allAccounts[createInstruction.accounts[0]];
                                 const bondingCurve=allAccounts[createInstruction.accounts[2]];
                                 const bondingCurveVault=allAccounts[createInstruction.accounts[3]];
-                                console.log(targetToken,bondingCurve,bondingCurveVault)
+                                console.log({targetToken,bondingCurve,bondingCurveVault})
                                 // var result=await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true)
                                 // if(!result) result=await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true);
                                 // if(!result) result=await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true);
