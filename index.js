@@ -237,10 +237,12 @@ function connectGeyser(){
                         const sig=bs58.encode(data.transaction.transaction.signature)
                         const allAccounts=[];
                         var detected=false;
+                        var pumpfunProgramIndex
                         transaction.transaction.message.accountKeys.map((account,index)=>{
                             if(!account) return;
                             const accountID=bs58.encode(account);
                             if((!detected)&&wallets.includes(accountID)) detected=true;
+                            if(accountID==PUMPFUN_BONDINGCURVE) pumpfunProgramIndex=index;
                             allAccounts.push(accountID);
                         })
                         transaction.meta.loadedWritableAddresses.map((account,index)=>{
@@ -259,7 +261,9 @@ function connectGeyser(){
                         if(allAccounts.includes(PUMPFUN_BONDINGCURVE)){
                             if(transaction.meta.logMessages.includes("Program log: Instruction: InitializeMint2")){
                                 console.log(allAccounts)
-                                console.log(transaction.transaction.message.instructions)
+                                // console.log(transaction.transaction.message.instructions)
+                                const pumpfunInstructions=transaction.transaction.message.instructions.filter(instruction=>instruction.programIdIndex==pumpfunProgramIndex);
+                                console.log(pumpfunInstructions)
                             }
                         }
                         else if(allAccounts.includes(RAYDIUM_OPENBOOK_AMM)){
