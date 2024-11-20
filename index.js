@@ -269,6 +269,7 @@ function connectGeyser(){
                                 // test=true;
                                 // console.log(allAccounts)
                                 console.log(`https://solscan.io/tx/${sig}`)
+                                return
                                 // console.log(transaction.transaction.message.instructions)
                                 const pumpfunInstructions=transaction.transaction.message.instructions.filter(instruction=>instruction.programIdIndex==pumpfunProgramIndex);
                                 // console.log(pumpfunInstructions)
