@@ -269,8 +269,8 @@ function connectGeyser(){
                                 // test=true;
                                 // console.log(allAccounts)
                                 console.log(`https://solscan.io/tx/${sig}`)
-                                console.log(transaction)
-                                return
+                                // console.log(transaction)
+                                // return
                                 // console.log(transaction.transaction.message.instructions)
                                 const pumpfunInstructions=transaction.transaction.message.instructions.filter(instruction=>instruction.programIdIndex==pumpfunProgramIndex);
                                 // console.log(pumpfunInstructions)
@@ -283,7 +283,7 @@ function connectGeyser(){
                                 const bondingCurve=allAccounts[createInstruction.accounts[2]];
                                 const bondingCurveVault=allAccounts[createInstruction.accounts[3]];
                                 console.log({targetToken,bondingCurve,bondingCurveVault})
-                                var result=await swapPumpfunFasterWallet(connection,wallet,targetToken,bondingCurve,bondingCurveVault,1000,true)
+                                var result=await swapPumpfunFasterWallet(connection,wallet,targetToken,bondingCurve,bondingCurveVault,10000,true)
                                 // var result=await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true)
                                 // var counter=0;
                                 // while(result!=true){
