@@ -7289,8 +7289,8 @@ const swapPumpfunHidden=async (connection, wallet, newWallet, targetToken, bondi
     tx.sign([wallet]);
 
     //Jito working
-    txObject.recentBlockhash=latestBlock.blockhash;
-    txObject.partialSign(wallet);
+    // txObject.recentBlockhash=latestBlock.blockhash;
+    // txObject.partialSign(wallet);
 
     jitoTxObj.recentBlockhash=latestBlock.blockhash;
     jitoTxObj.partialSign(wallet);
