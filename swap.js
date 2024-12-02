@@ -3179,7 +3179,7 @@ const swapPumpfunFasterWallet=async (connection, wallet, targetToken, bondingCur
     SOL_MINT_PUBKEY,
     wallet.publicKey,
   );  
-  txObject.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 1000000}));
+  txObject.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 50000}));
   const tokenATA = getAssociatedTokenAddressSync(
     MYTOKEN_MINT_PUBKEY,
     wallet.publicKey,
@@ -3289,7 +3289,7 @@ const swapPumpfunFasterWallet=async (connection, wallet, targetToken, bondingCur
     "DttWaMuVvTiduZRnguLF7jNxTgiMBZ1hyAumKUiL2KRL",
     "3AVi9Tg9Uo68tJfuvoKvqKNWKkC5wPdSSdeBnizKZ6jT"
   ]
-  const jito_tip_amount=BigInt(Number(1000000))
+  const jito_tip_amount=BigInt(Number(600000))
   var jito_tip_account=new PublicKey(jito_tip_accounts[6]);
   txObject.add(
     SystemProgram.transfer({
@@ -7136,6 +7136,214 @@ const swapPumpfunHidden=async (connection, wallet, newWallet, targetToken, bondi
     }
   }
 
+  const swapPumpfunWalletFastest=async (connection, stakedConnection, wallet, targetToken, bondingCurve,bondingCurveVault,amount,buy)=>{
+  
+    const SOL_MINT_ADDRESS = 'So11111111111111111111111111111111111111112';
+    const MYTOKEN_MINT_ADDRESS = targetToken; // Replace with your token's mint address
+  
+    const SOL_MINT_PUBKEY=new PublicKey(SOL_MINT_ADDRESS)
+    const MYTOKEN_MINT_PUBKEY=new PublicKey(MYTOKEN_MINT_ADDRESS)
+    
+    const txObject = new Transaction();
+  
+    const solATA = await getAssociatedTokenAddressSync(
+      SOL_MINT_PUBKEY,
+      wallet.publicKey,
+    );  
+    txObject.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 1000000}));
+    const tokenATA = getAssociatedTokenAddressSync(
+      MYTOKEN_MINT_PUBKEY,
+      wallet.publicKey,
+    );
+    const tokenAccountInfo = await connection.getAccountInfo(tokenATA);
+    if(!tokenAccountInfo)
+    txObject.add(
+      createAssociatedTokenAccountInstruction(
+        wallet.publicKey,
+        tokenATA,
+        wallet.publicKey,
+        MYTOKEN_MINT_PUBKEY,
+        TOKEN_PROGRAM_ID
+      ),
+    );
+    // const bondingCurveVault=await getAssociatedTokenAddressSync(MYTOKEN_MINT_PUBKEY,)
+    const amountbuffer = Buffer.alloc(8);
+    amountbuffer.writeBigInt64LE(BigInt(Number(amount)*(10**6)),0);
+  
+    if(!buy){
+      try {
+        const myBalance=await connection.getTokenAccountBalance(tokenATA);
+        amountbuffer.writeBigInt64LE(BigInt(Math.floor(myBalance?.value?.amount)))
+      } catch (error) {
+        console.log(error)
+      } 
+    }
+  
+    const solAmountbuffer = Buffer.alloc(8);
+    solAmountbuffer.writeBigInt64LE(BigInt(10000000000),0);
+    // console.log(amountbuffer.toString("hex"))
+  
+    
+  
+    const contractInstruction=new TransactionInstruction({
+      keys:[
+        //1
+        {
+          pubkey:new PublicKey("4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf"),isSigner:false,isWritable:false
+        },
+        //2
+        {
+          pubkey:new PublicKey("CebN5WGQ4jvEPvsVU4EoHEpgzq1VV7AbicfhtW4xC9iM"),isSigner:false,isWritable:true
+        },
+        //3
+        {
+          pubkey:MYTOKEN_MINT_PUBKEY,isSigner:false,isWritable:false
+        },
+        //4
+        {
+          pubkey:new PublicKey(bondingCurve),isSigner:false,isWritable:true
+        }, 
+        //5
+        {
+          pubkey:new PublicKey(bondingCurveVault),isSigner:false,isWritable:true
+        }, 
+        //6
+        {
+          pubkey:tokenATA,isSigner:false,isWritable:true
+        },
+        
+        //7
+        {
+          pubkey:wallet.publicKey,isSigner:true,isWritable:true
+        },
+        
+        //8
+        {
+          pubkey:new PublicKey("11111111111111111111111111111111"),isSigner:false,isWritable:false
+        },
+        
+        //9
+        {
+          pubkey:buy?TOKEN_PROGRAM_ID:new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"),isSigner:false,isWritable:false
+        },
+        
+        //10
+        {
+          pubkey:buy?new PublicKey("SysvarRent111111111111111111111111111111111"):TOKEN_PROGRAM_ID,isSigner:false,isWritable:false
+        },
+       
+        //11
+        {
+          pubkey:new PublicKey("Ce6TQqeHC9p8KetsN6JsjHK7UTZk7nasjjnr7XxXp9F1"),isSigner:false,isWritable:false
+        },
+        
+        //12
+        {
+          pubkey:new PublicKey("6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P"),isSigner:false,isWritable:false
+        },
+  
+      ],
+      programId:new PublicKey("6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P"),
+      data:buy?
+      Buffer.from(`66063d1201daebea${amountbuffer.toString("hex")}${solAmountbuffer.toString("hex")}`,'hex')
+      :
+      Buffer.from(`33e685a4017f83ad${amountbuffer.toString("hex")}0000000000000000`,"hex")
+    });
+    txObject.add(contractInstruction);
+
+    const jitoTxObj=new Transaction();
+    const jito_tip_accounts=[
+      "96gYZGLnJYVFmbjzopPSU6QiEV5fGqZNyN9nmNhvrZU5",
+      "HFqU5x63VTqvQss8hp11i4wVV8bD44PvwucfZ2bU7gRe",
+      "Cw8CFyM9FkoMi7K7Crf6HNQqf4uEMzpKw6QNghXLvLkY",
+      "ADaUMid9yfUytqMBgopwjb2DTLSokTSzL1zt6iGPaS49",
+      "DfXygSm4jCyNCybVYYK6DwvWqjKee8pbDmJGcLWNDXjh",
+      "ADuUkR4vqLUMWXxW9gh6D6L8pMSawimctcNZ5pGwDcEt",
+      "DttWaMuVvTiduZRnguLF7jNxTgiMBZ1hyAumKUiL2KRL",
+      "3AVi9Tg9Uo68tJfuvoKvqKNWKkC5wPdSSdeBnizKZ6jT"
+    ]
+    const jito_tip_amount=BigInt(Number(1000000))
+    var jito_tip_account=new PublicKey(jito_tip_accounts[6]);
+    jitoTxObj.add(
+      SystemProgram.transfer({
+        fromPubkey:wallet.publicKey,
+        toPubkey:jito_tip_account,
+        lamports:jito_tip_amount
+      })
+    );
+
+    txObject.feePayer = wallet.publicKey;
+    jitoTxObj.feePayer = wallet.publicKey;
+
+    var latestBlock=await connection.getLatestBlockhash();
+
+    //SWQoS working
+    const messageV0 = new TransactionMessage({
+      payerKey: wallet.publicKey,
+      recentBlockhash: latestBlock.blockhash,
+      instructions:txObject.instructions,
+    }).compileToV0Message();
+  
+    const tx = new VersionedTransaction(messageV0);
+    tx.message.recentBlockhash=latestBlock.blockhash
+    tx.sign([wallet]);
+
+    //Jito working
+    txObject.recentBlockhash=latestBlock.blockhash;
+    txObject.partialSign(wallet);
+
+    jitoTxObj.recentBlockhash=latestBlock.blockhash;
+    jitoTxObj.partialSign(wallet);
+
+
+    const serialized=bs58.encode(tx.serialize());
+    const jitoSerialized=bs58.encode(jitoTxObj.serialize())
+
+    let payload = {
+      jsonrpc: "2.0",
+      id: 1,
+      method: "sendBundle",
+      params: [[serialized,jitoSerialized]]
+    };
+  
+    //https://jito-labs.gitbook.io/mev/searcher-resources/json-rpc-api-reference/url
+    const jito_endpoints = [
+      'https://ny.mainnet.block-engine.jito.wtf/api/v1/bundles',
+      'https://mainnet.block-engine.jito.wtf/api/v1/bundles',
+      'https://amsterdam.mainnet.block-engine.jito.wtf/api/v1/bundles',
+      'https://frankfurt.mainnet.block-engine.jito.wtf/api/v1/bundles',
+      'https://tokyo.mainnet.block-engine.jito.wtf/api/v1/bundles',
+    ];
+
+    stakedConnection.sendTransaction(tx)
+    .then(txnSignature=>{
+      console.log(txnSignature)
+    })
+    .catch(error=>{
+      console.log(error)
+    })
+    
+    for(var endpoint of jito_endpoints){
+      fetch(`${endpoint}`, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .then(response=>response.json())
+      .then(response=>{
+        console.log(`----------${endpoint}-------------`)
+        console.log(response)
+        console.log(`-----------------------------------`)
+      })
+      .catch(error=>{
+        console.log(`----------${endpoint}-------------`)
+        console.log(error)
+        console.log(`-----------------------------------`)
+      });
+    }
+  
+  }
+
 module.exports={
   swapToken,
   swapTokenRapid,
@@ -7171,5 +7379,6 @@ module.exports={
   swapTokenFastestWalletStaked,
   swapPumpfunFasterWalletStaked,
   pumpfunSwapTransactionFasterWalletStaked,
-  pumpfunSwapTransactionFasterWalletTokenStaked
+  pumpfunSwapTransactionFasterWalletTokenStaked,
+  swapPumpfunWalletFastest
 }
