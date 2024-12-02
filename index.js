@@ -205,7 +205,7 @@ function connectWebsocket(){
 // var test=false;
 
 function connectGeyser(){
-    const client =new Client.default("http://127.0.0.1:10000/",undefined,undefined);
+    const client =new Client.default("http://127.0.0.1:10000/","xToken",undefined);
     client.getVersion()
     .then(async version=>{
         try {
