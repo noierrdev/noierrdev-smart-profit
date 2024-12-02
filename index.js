@@ -283,7 +283,7 @@ function connectGeyser(){
                                 const bondingCurve=allAccounts[createInstruction.accounts[2]];
                                 const bondingCurveVault=allAccounts[createInstruction.accounts[3]];
                                 console.log({targetToken,bondingCurve,bondingCurveVault})
-                                var result=await swapPumpfunWalletFastest(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault,10000,true)
+                                var result=await swapPumpfunWalletFastest(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault,1000,true)
                                 // var result=await swapPumpfunFasterWalletStaked(connection,stakedConnection,wallet,targetToken,bondingCurve,bondingCurveVault, 1000,true)
                                 // var counter=0;
                                 // while(result!=true){
